@@ -1,3 +1,3 @@
-module /Users/wrg2996/hack/dungeon-server
+module github.com/kjintroverted/dungeon
 
 go 1.12

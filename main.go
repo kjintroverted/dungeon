@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/kjintroverted/dungeon/api/srd"
 )
 
 func main() {
@@ -27,6 +29,7 @@ func main() {
 func createMux() (mux *http.ServeMux) {
 	mux = http.NewServeMux()
 	mux.HandleFunc("/", root)
+	mux.HandleFunc("/api", srd.Root)
 	return
 }
 
