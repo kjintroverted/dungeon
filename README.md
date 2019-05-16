@@ -6,4 +6,4 @@ Requires [Golang](https://golang.org/doc/install) 1.12 or higher.
 
 ## Getting Started
 
-Run `go run .`
+> `go run .`
