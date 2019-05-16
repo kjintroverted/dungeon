@@ -1,23 +1,53 @@
 package srd
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+
+	"github.com/kjintroverted/dungeon/models"
+	"github.com/kjintroverted/dungeon/util"
 )
 
-const url string = "https://api-beta.open5e.com/"
+const url string = "https://api-beta.open5e.com"
 
 func Root(w http.ResponseWriter, r *http.Request) {
-	resp, err := http.Get(url)
-
+	resp, err := util.Get(url)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
 		return
 	}
 
-	defer resp.Body.Close()
-	bytes, _ := ioutil.ReadAll(resp.Body)
-	fmt.Fprint(w, string(bytes))
+	fmt.Fprint(w, resp)
+}
+
+func Spells(w http.ResponseWriter, r *http.Request) {
+	// REQUEST
+	raw, err := util.Get(url + "/spells?" + r.URL.RawQuery)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
+	// PULL RESULTS OFF RESPONSE
+	var response interface{}
+	json.Unmarshal(raw, &response)
+	spellsInterface := response.(map[string]interface{})["results"].([]interface{})
+
+	// MAP RESULTS TO STRUCT
+	var spells []models.Spell
+	util.MapDecoder(&spells).Decode(spellsInterface)
+	for i, spell := range spells {
+		spell.ConvertFields()
+		spells[i] = spell
+	}
+
+	// WRITE JSON
+	b, _ := json.Marshal(spells)
+	if err != nil {
+		fmt.Println("ERROR:", err.Error())
+	}
+	w.Write(b)
 }

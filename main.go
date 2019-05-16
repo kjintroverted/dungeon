@@ -30,6 +30,7 @@ func createMux() (mux *http.ServeMux) {
 	mux = http.NewServeMux()
 	mux.HandleFunc("/", root)
 	mux.HandleFunc("/api", srd.Root)
+	mux.HandleFunc("/api/spells", srd.Spells)
 	return
 }
 
