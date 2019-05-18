@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kjintroverted/dungeon/api"
 	"github.com/kjintroverted/dungeon/api/srd"
 )
 
@@ -31,6 +32,7 @@ func createMux() (mux *http.ServeMux) {
 	mux.HandleFunc("/", root)
 	mux.HandleFunc("/api", srd.Root)
 	mux.HandleFunc("/api/spells", srd.Spells)
+	mux.HandleFunc("/api/characters", api.Characters)
 	return
 }
 
