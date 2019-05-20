@@ -37,7 +37,7 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 
 		var character models.Character
 		doc.DataTo(&character)
-		character.Id = doc.Ref.ID
+		character.ID = doc.Ref.ID
 		characters = append(characters, character)
 	}
 
