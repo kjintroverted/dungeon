@@ -19,14 +19,13 @@ var err error
 
 func Characters(w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
-	app, err = firebase.NewApp(ctx, nil)
-	if err != nil {
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
 		fmt.Println("APP ERROR:", err.Error())
 	}
-	client, err = app.Firestore(ctx)
-	if err != nil {
+	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+
 	var characters []models.Character
 	iter := client.Collection("characters").Documents(ctx)
 
