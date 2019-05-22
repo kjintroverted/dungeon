@@ -17,3 +17,9 @@ type Character struct {
 	Armor int    `json:"armor"`
 	Speed int    `json:"speed"`
 }
+
+type Level struct {
+	XP               int
+	Level            int
+	ProficiencyBonus int
+}
