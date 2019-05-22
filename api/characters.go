@@ -39,6 +39,24 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+
+	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+
+	var character models.Character
+	doc.DataTo(&character)
+	character.ID = doc.Ref.ID
+	bytes, _ := json.Marshal(character)
+	w.Write(bytes)
+}
+
 func updateCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {

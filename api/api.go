@@ -22,7 +22,11 @@ var err error
 func Characters(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		getAllCharacters(w, r)
+		if id := mux.Vars(r)["id"]; len(id) > 0 {
+			getCharacter(id, w, r)
+		} else {
+			getAllCharacters(w, r)
+		}
 		break
 	case "POST":
 		// READ BODY BYTES
