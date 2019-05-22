@@ -67,3 +67,18 @@ func addCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, ref.ID)
 }
+
+func deleteCharacter(id string, w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+
+	result, _ := client.Collection("characters").Doc(id).Delete(ctx)
+
+	bytes, _ := json.Marshal(result)
+	w.Write(bytes)
+}
