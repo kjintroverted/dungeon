@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -18,6 +19,19 @@ var client *firestore.Client
 var err error
 
 func Characters(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		getAllCharacters(w, r)
+		break
+	default:
+		e := errors.New("Invalid operation " + r.Method + " on character collection.")
+		w.WriteHeader(http.StatusBadRequest)
+		bytes, _ := json.Marshal(e)
+		w.Write(bytes)
+	}
+}
+
+func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
 		fmt.Println("APP ERROR:", err.Error())
