@@ -1,29 +1,31 @@
 ###
 GET http://localhost:4000/api
 
-###
+### ALL SPELLS (paginated)
 GET http://localhost:4000/api/spells
 
-###
+### ALL CHARACTERS
 GET http://localhost:4000/api/characters
 
-###
-POST http://localhost:4000/api/characters
+### UPDATE CHARACTER
+POST http://localhost:4000/api/characters 
 Content-Type: application/json
+
 {
     "id": "YveSWVLa9saMpZPMVmqI",
     "name": "Ardair Storm Crow",
     "race": "Human",
     "class": "Wizard",
-    "xp": 300,
-    "level": 0,
-    "str": 0,
-    "dex": 0,
-    "con": 0,
-    "intel": 0,
-    "wis": 0,
-    "cha": 0,
-    "hp": 0,
-    "armor": 0,
-    "speed": 0
+    "xp": 300
+}
+
+### NEW CHARACTER
+POST http://localhost:4000/api/characters 
+Content-Type: application/json
+
+{
+    "name": "Fighty McPunch",
+    "race": "Half-Orc",
+    "class": "Barbarian",
+    "xp": 200
 }
