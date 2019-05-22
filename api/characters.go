@@ -19,6 +19,7 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+	defer client.Close()
 
 	var characters []models.Character
 	iter := client.Collection("characters").Documents(ctx)
@@ -47,6 +48,7 @@ func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+	defer client.Close()
 
 	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
 
@@ -65,6 +67,7 @@ func updateCharacter(c models.Character, w http.ResponseWriter, r *http.Request)
 	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+	defer client.Close()
 
 	result, _ := client.Collection("characters").Doc(c.ID).Set(ctx, c)
 
@@ -80,6 +83,7 @@ func addCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
 	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+	defer client.Close()
 
 	ref, _, _ := client.Collection("characters").Add(ctx, c)
 
@@ -94,6 +98,7 @@ func deleteCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	if client, err = app.Firestore(ctx); err != nil {
 		fmt.Println("DB ERROR:", err.Error())
 	}
+	defer client.Close()
 
 	result, _ := client.Collection("characters").Doc(id).Delete(ctx)
 
