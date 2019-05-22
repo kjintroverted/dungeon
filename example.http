@@ -1,0 +1,15 @@
+###
+GET http://localhost:4000/api
+
+###
+GET http://localhost:4000/api/spells
+
+###
+GET http://localhost:4000/api/characters
+
+###
+POST http://localhost:4000/api/characters
+Content-Type: application/json
+{
+
+}
