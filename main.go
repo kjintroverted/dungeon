@@ -31,8 +31,10 @@ func main() {
 func createMux() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", root)
+
 	r.HandleFunc("/api", srd.Root)
 	r.HandleFunc("/api/spells", srd.Spells)
+
 	r.HandleFunc("/api/characters", api.Characters)
 	r.HandleFunc("/api/characters/{id}", api.Characters)
 	return r
