@@ -19,6 +19,7 @@ var ctx context.Context
 var client *firestore.Client
 var err error
 
+// ALL CHARACTER HANDLERS
 func Characters(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
