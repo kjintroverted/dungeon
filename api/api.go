@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"github.com/kjintroverted/dungeon/models"
-	"google.golang.org/api/iterator"
+	"github.com/kjintroverted/dungeon/util"
 )
 
 var app *firebase.App
@@ -23,38 +23,28 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		getAllCharacters(w, r)
 		break
+	case "POST":
+		// READ BODY BYTES
+		raw, _ := ioutil.ReadAll(r.Body)
+
+		// CONVERT JSON BYTES TO MAP
+		var body map[string]interface{}
+		json.Unmarshal(raw, &body)
+
+		// CONVERT MAP TO STRUCT
+		var character models.Character
+		util.MapDecoder(&character).Decode(body)
+
+		if len(character.ID) <= 0 {
+			addCharacter(character, w, r)
+		} else {
+			updateCharacter(character, w, r)
+		}
+		break
 	default:
 		e := errors.New("Invalid operation " + r.Method + " on character collection.")
 		w.WriteHeader(http.StatusBadRequest)
 		bytes, _ := json.Marshal(e)
 		w.Write(bytes)
 	}
-}
-
-func getAllCharacters(w http.ResponseWriter, r *http.Request) {
-	ctx = context.Background()
-	if app, err = firebase.NewApp(ctx, nil); err != nil {
-		fmt.Println("APP ERROR:", err.Error())
-	}
-	if client, err = app.Firestore(ctx); err != nil {
-		fmt.Println("DB ERROR:", err.Error())
-	}
-
-	var characters []models.Character
-	iter := client.Collection("characters").Documents(ctx)
-
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-
-		var character models.Character
-		doc.DataTo(&character)
-		character.ID = doc.Ref.ID
-		characters = append(characters, character)
-	}
-
-	res, _ := json.Marshal(characters)
-	w.Write(res)
 }
