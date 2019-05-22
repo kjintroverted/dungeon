@@ -12,7 +12,7 @@ POST http://localhost:4000/api/characters
 Content-Type: application/json
 
 {
-    "id": "YveSWVLa9saMpZPMVmqI",
+    "id": "Cx5B4G7COna1qvSFnoeq",
     "name": "Ardair Storm Crow",
     "race": "Human",
     "class": "Wizard",
@@ -29,3 +29,6 @@ Content-Type: application/json
     "class": "Barbarian",
     "xp": 200
 }
+
+### DELETE CHARACTER
+DELETE http://localhost:4000/api/characters/6oHp62hgG0zeFPjwa8RB

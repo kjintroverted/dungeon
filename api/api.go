@@ -9,6 +9,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"github.com/gorilla/mux"
 	"github.com/kjintroverted/dungeon/models"
 	"github.com/kjintroverted/dungeon/util"
 )
@@ -40,6 +41,9 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 		} else {
 			updateCharacter(character, w, r)
 		}
+		break
+	case "DELETE":
+		deleteCharacter(mux.Vars(r)["id"], w, r)
 		break
 	default:
 		e := errors.New("Invalid operation " + r.Method + " on character collection.")

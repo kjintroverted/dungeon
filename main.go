@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/kjintroverted/dungeon/api"
 	"github.com/kjintroverted/dungeon/api/srd"
 )
@@ -27,13 +28,14 @@ func main() {
 }
 
 // CREATE MULTIPLEX PATH HANDLER
-func createMux() (mux *http.ServeMux) {
-	mux = http.NewServeMux()
-	mux.HandleFunc("/", root)
-	mux.HandleFunc("/api", srd.Root)
-	mux.HandleFunc("/api/spells", srd.Spells)
-	mux.HandleFunc("/api/characters", api.Characters)
-	return
+func createMux() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/", root)
+	r.HandleFunc("/api", srd.Root)
+	r.HandleFunc("/api/spells", srd.Spells)
+	r.HandleFunc("/api/characters", api.Characters)
+	r.HandleFunc("/api/characters/{id}", api.Characters)
+	return r
 }
 
 // ROOT GETTER
