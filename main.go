@@ -37,6 +37,9 @@ func createMux() *mux.Router {
 
 	r.HandleFunc("/api/characters", api.Characters)
 	r.HandleFunc("/api/characters/{id}", api.Characters)
+
+	r.HandleFunc("/api/level", api.LevelInfo)
+
 	return r
 }
 

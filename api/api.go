@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -56,4 +57,30 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 		bytes, _ := json.Marshal(e)
 		w.Write(bytes)
 	}
+}
+
+func LevelInfo(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	xp, _ := strconv.Atoi(query.Get("xp"))
+
+	var levelInfo models.Level
+	for i, level := range util.Advancement {
+
+		defer func() {
+			if message := recover(); message != nil {
+				bytes, _ := json.Marshal(level)
+				w.Write(bytes)
+			}
+		}()
+
+		nextLevel := util.Advancement[i+1]
+		if nextLevel.MinXP > xp {
+			levelInfo = level
+			levelInfo.NextXP = nextLevel.MinXP
+			break
+		}
+	}
+
+	bytes, _ := json.Marshal(levelInfo)
+	w.Write(bytes)
 }
