@@ -60,8 +60,7 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 }
 
 func LevelInfo(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	xp, _ := strconv.Atoi(query.Get("xp"))
+	xp, _ := strconv.Atoi(r.URL.Query().Get("xp"))
 
 	var levelInfo models.Level
 	for i, level := range util.Advancement {

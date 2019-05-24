@@ -1,7 +1,7 @@
-###
+### SRD ROOT
 GET http://localhost:4000/api
 
-### ALL SPELLS (paginated)
+### SRD ALL SPELLS (paginated)
 GET http://localhost:4000/api/spells
 
 ### LEVEL INFO
