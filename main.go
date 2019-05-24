@@ -30,9 +30,8 @@ func main() {
 // CREATE MULTIPLEX PATH HANDLER
 func createMux() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/", root)
+	r.HandleFunc("/api", root)
 
-	r.HandleFunc("/api", srd.Root)
 	r.HandleFunc("/api/spells", srd.Spells)
 
 	r.HandleFunc("/api/characters", api.Characters)
@@ -45,5 +44,5 @@ func createMux() *mux.Router {
 
 // ROOT GETTER
 func root(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to the Dungeon")
+	fmt.Fprintf(w, "Welcome to the Dungeon")
 }
