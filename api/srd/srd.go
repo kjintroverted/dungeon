@@ -11,17 +11,6 @@ import (
 
 const url string = "https://api-beta.open5e.com"
 
-func Root(w http.ResponseWriter, r *http.Request) {
-	resp, err := util.Get(url)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
-
-	fmt.Fprint(w, resp)
-}
-
 func Spells(w http.ResponseWriter, r *http.Request) {
 	// REQUEST
 	raw, err := util.Get(url + "/spells?" + r.URL.RawQuery)
