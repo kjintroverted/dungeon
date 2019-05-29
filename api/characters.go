@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"github.com/kjintroverted/dungeon/models"
 	"google.golang.org/api/iterator"
@@ -22,7 +23,12 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	defer client.Close()
 
 	var characters []models.Character
-	iter := client.Collection("characters").Documents(ctx)
+	var iter *firestore.DocumentIterator
+	if owner := r.URL.Query().Get("owner"); owner == "" {
+		iter = client.Collection("characters").Documents(ctx)
+	} else {
+		iter = client.Collection("characters").Where("Owner", "==", owner).Documents(ctx)
+	}
 
 	for {
 		doc, err := iter.Next()
