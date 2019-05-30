@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -41,6 +42,8 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 		// CONVERT MAP TO STRUCT
 		var character models.Character
 		util.MapDecoder(&character).Decode(body)
+
+		fmt.Println("POST character", character.Name+"("+character.ID+")")
 
 		if len(character.ID) <= 0 {
 			addCharacter(character, w, r)
