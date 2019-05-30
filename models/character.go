@@ -2,6 +2,7 @@ package models
 
 type Character struct {
 	ID    string `json:"id" firestore:"-"`
+	Owner string `json:"owner"`
 	Name  string `json:"name"`
 	Race  string `json:"race"`
 	Class string `json:"class"`

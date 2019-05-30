@@ -10,6 +10,9 @@ GET http://localhost:4000/api/level?xp=35500
 ### ALL CHARACTERS
 GET http://localhost:4000/api/characters
 
+### ALL CHARACTERS FOR OWNER
+GET http://localhost:4000/api/characters?owner=clayton.yarborough@gmail.com
+
 ### SINGLE CHARACTER
 GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq
 
@@ -19,6 +22,7 @@ Content-Type: application/json
 
 {
     "id": "Cx5B4G7COna1qvSFnoeq",
+    "owner": "wkgreen13@gmail.com",
     "name": "Ardair Storm Crow",
     "race": "Human",
     "class": "Wizard",
@@ -30,10 +34,11 @@ POST http://localhost:4000/api/characters
 Content-Type: application/json
 
 {
-    "name": "Fighty McPunch",
-    "race": "Half-Orc",
-    "class": "Barbarian",
-    "xp": 200
+    "name": "Samson",
+    "race": "Dwarf",
+    "class": "Fighter",
+    "xp": 300,
+    "owner": "clayton.yarborough@gmail.com"
 }
 
 ### DELETE CHARACTER
