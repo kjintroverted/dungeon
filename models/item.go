@@ -28,9 +28,13 @@ func (i *Item) ConvertFields() {
 	i.Index, _ = strconv.Atoi(params[len(params)-1])
 	i.URL = ""
 
-	i.GoldCost = float32(i.Cost.Quantity) * util.CoinConversion[i.Cost.Unit]
-	i.Cost = nil
+	if i.Cost != nil {
+		i.GoldCost = float32(i.Cost.Quantity) * util.CoinConversion[i.Cost.Unit]
+		i.Cost = nil
+	}
 
-	i.Damage.Type = i.Damage.DamageType.Name
-	i.Damage.DamageType = nil
+	if i.Damage != nil {
+		i.Damage.Type = i.Damage.DamageType.Name
+		i.Damage.DamageType = nil
+	}
 }
