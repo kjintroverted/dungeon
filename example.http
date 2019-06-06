@@ -1,8 +1,11 @@
 ### SRD ROOT
 GET http://localhost:4000/api
 
-### SRD ALL SPELLS (paginated)
-GET http://localhost:4000/api/spells
+### SRD ALL SPELLS FOR LEVEL
+GET http://localhost:4000/api/spells?level=1
+
+### SRD GET SPELL
+GET http://localhost:4000/api/spells/burning-hands
 
 ### LEVEL INFO
 GET http://localhost:4000/api/level?xp=35500
