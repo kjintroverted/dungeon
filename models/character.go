@@ -17,10 +17,3 @@ type Character struct {
 	Wis   int    `json:"wis"`
 	Cha   int    `json:"cha"`
 }
-
-type Level struct {
-	MinXP  int `json:"-"`
-	Level  int `json:"level"`
-	Bonus  int `json:"proBonus"`
-	NextXP int `json:"next,omitempty"`
-}
