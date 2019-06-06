@@ -34,10 +34,10 @@ func createMux() *mux.Router {
 
 	r.HandleFunc("/api/spells", srd.GetSpells)
 	r.HandleFunc("/api/spells/{name}", srd.GetSpell)
+	r.HandleFunc("/api/items", srd.GetItems)
 
 	r.HandleFunc("/api/characters", api.Characters)
 	r.HandleFunc("/api/characters/{id}", api.Characters)
-
 	r.HandleFunc("/api/level", api.LevelInfo)
 
 	return r
