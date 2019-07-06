@@ -62,6 +62,26 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func AuthUsers(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	switch r.Method {
+	case "GET":
+		getAuthUsers(id, w, r)
+		break
+	case "POST":
+		addAuthUser(id, r.URL.Query().Get("user"), w, r)
+		break
+	case "DELETE":
+		removeAuthUser(id, r.URL.Query().Get("user"), w, r)
+		break
+	default:
+		e := errors.New("Invalid operation " + r.Method + " on Auth Users collection.")
+		w.WriteHeader(http.StatusBadRequest)
+		bytes, _ := json.Marshal(e)
+		w.Write(bytes)
+	}
+}
+
 func LevelInfo(w http.ResponseWriter, r *http.Request) {
 	xp, _ := strconv.Atoi(r.URL.Query().Get("xp"))
 
