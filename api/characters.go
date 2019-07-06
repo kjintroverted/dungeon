@@ -96,6 +96,84 @@ func addCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, ref.ID)
 }
 
+func getAuthUsers(id string, w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+	defer client.Close()
+
+	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+
+	var character models.Character
+	doc.DataTo(&character)
+
+	bytes, _ := json.Marshal(character.AuthorizedUsers)
+
+	w.Write(bytes)
+}
+
+func addAuthUser(id string, user string, w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+	defer client.Close()
+
+	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+
+	var character models.Character
+	doc.DataTo(&character)
+
+	for _, email := range character.AuthorizedUsers {
+		if email == user {
+			w.Write([]byte(user + " already authorized."))
+			return
+		}
+	}
+
+	character.AuthorizedUsers = append(character.AuthorizedUsers, user)
+
+	client.Collection("characters").Doc(doc.Ref.ID).Set(ctx, character)
+	fmt.Println(character.AuthorizedUsers)
+
+	w.Write([]byte("Added " + user + " as authorized user"))
+}
+
+func removeAuthUser(id string, user string, w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+	defer client.Close()
+
+	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+
+	var character models.Character
+	doc.DataTo(&character)
+
+	arr := character.AuthorizedUsers
+	for i, email := range arr {
+		if email == user {
+			character.AuthorizedUsers = append(arr[:i], arr[i+1:]...)
+			break
+		}
+	}
+
+	client.Collection("characters").Doc(doc.Ref.ID).Set(ctx, character)
+
+	w.Write([]byte(user + " removed as authorized user"))
+}
+
 func deleteCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
