@@ -46,7 +46,7 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
+func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
 		fmt.Println("APP ERROR:", err.Error())
@@ -56,13 +56,40 @@ func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
-	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+	docRef := client.Collection("characters").Doc(id)
 
-	var character models.Character
-	doc.DataTo(&character)
-	character.ID = doc.Ref.ID
-	bytes, _ := json.Marshal(character)
-	w.Write(bytes)
+	if !watch {
+		doc, _ := docRef.Get(ctx)
+		var character models.Character
+		doc.DataTo(&character)
+		character.ID = doc.Ref.ID
+		bytes, _ := json.Marshal(character)
+		w.Write(bytes)
+	} else {
+		iter := docRef.Snapshots(ctx)
+		streamCharacterUpdates(w, iter)
+		defer iter.Stop()
+	}
+}
+
+func streamCharacterUpdates(w http.ResponseWriter, iter *firestore.DocumentSnapshotIterator) {
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		fmt.Println("Expected writer to be flusher.")
+	}
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	for {
+		docsnap, _ := iter.Next()
+		doc, _ := docsnap.Ref.Get(ctx)
+		var character models.Character
+		doc.DataTo(&character)
+		character.ID = doc.Ref.ID
+		bytes, _ := json.Marshal(character)
+		w.Write(bytes)
+		flusher.Flush()
+	}
 }
 
 func updateCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
