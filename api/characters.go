@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"github.com/gorilla/websocket"
 	"github.com/kjintroverted/dungeon/models"
 	"google.golang.org/api/iterator"
 )
@@ -67,28 +69,23 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 		w.Write(bytes)
 	} else {
 		iter := docRef.Snapshots(ctx)
-		streamCharacterUpdates(w, iter)
-		defer iter.Stop()
-	}
-}
-
-func streamCharacterUpdates(w http.ResponseWriter, iter *firestore.DocumentSnapshotIterator) {
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		fmt.Println("Expected writer to be flusher.")
-	}
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	for {
-		docsnap, _ := iter.Next()
-		doc, _ := docsnap.Ref.Get(ctx)
-		var character models.Character
-		doc.DataTo(&character)
-		character.ID = doc.Ref.ID
-		bytes, _ := json.Marshal(character)
-		w.Write(bytes)
-		flusher.Flush()
+		var upgrader = websocket.Upgrader{}
+		upgrader.CheckOrigin = func(*http.Request) bool { return true }
+		c, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Print("upgrade:", err)
+			return
+		}
+		defer c.Close()
+		for {
+			docsnap, _ := iter.Next()
+			doc, _ := docsnap.Ref.Get(ctx)
+			var character models.Character
+			doc.DataTo(&character)
+			character.ID = doc.Ref.ID
+			bytes, _ := json.Marshal(character)
+			c.WriteMessage(websocket.TextMessage, bytes)
+		}
 	}
 }
 
