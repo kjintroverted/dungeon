@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -68,6 +69,8 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 		bytes, _ := json.Marshal(character)
 		w.Write(bytes)
 	} else {
+		fmt.Println("Opening socket")
+		fmt.Println("Watching", id)
 		iter := docRef.Snapshots(ctx)
 		var upgrader = websocket.Upgrader{}
 		upgrader.CheckOrigin = func(*http.Request) bool { return true }
@@ -77,6 +80,7 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 			return
 		}
 		defer c.Close()
+		go readLoop(c)
 		for {
 			docsnap, _ := iter.Next()
 			doc, _ := docsnap.Ref.Get(ctx)
@@ -84,7 +88,23 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 			doc.DataTo(&character)
 			character.ID = doc.Ref.ID
 			bytes, _ := json.Marshal(character)
-			c.WriteMessage(websocket.TextMessage, bytes)
+			c.SetWriteDeadline(time.Now().Add(time.Second * 10))
+			err := c.WriteMessage(websocket.TextMessage, bytes)
+			if err != nil {
+				log.Println("Writing unavailable. Leaving Listener.")
+				c.Close()
+				break
+			}
+		}
+	}
+}
+
+func readLoop(c *websocket.Conn) {
+	for {
+		if _, _, err := c.NextReader(); err != nil {
+			log.Println("Closing socket")
+			c.Close()
+			break
 		}
 	}
 }
