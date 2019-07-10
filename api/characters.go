@@ -61,18 +61,21 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 
 	docRef := client.Collection("characters").Doc(id)
 
-	if !watch {
+	if !watch { // GET CURRENT CHARACTER STATS
 		doc, _ := docRef.Get(ctx)
 		var character models.Character
 		doc.DataTo(&character)
 		character.ID = doc.Ref.ID
 		bytes, _ := json.Marshal(character)
 		w.Write(bytes)
-	} else {
+	} else { // SUBSCRIBE TO CHARACTER CHANGES
 		fmt.Println("Opening socket")
 		fmt.Println("Watching", id)
+
+		// CHANGE ITERATOR
 		iter := docRef.Snapshots(ctx)
 		var upgrader = websocket.Upgrader{}
+		// ALLOW ALL ORIGINS
 		upgrader.CheckOrigin = func(*http.Request) bool { return true }
 		c, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
@@ -80,7 +83,10 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 			return
 		}
 		defer c.Close()
+
+		// CONCURRENT LOOP TO CHECK IF CONNECTION IS LIVE
 		go readLoop(c)
+		// LOOP TO RECEIVE SNAPSHOT AND SEND TO CLIENT
 		for {
 			docsnap, _ := iter.Next()
 			doc, _ := docsnap.Ref.Get(ctx)
