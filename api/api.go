@@ -26,7 +26,7 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if id := mux.Vars(r)["id"]; len(id) > 0 {
-			getCharacter(id, w, r)
+			getCharacter(id, r.URL.Query().Get("watch") == "true", w, r)
 		} else {
 			getAllCharacters(w, r)
 		}

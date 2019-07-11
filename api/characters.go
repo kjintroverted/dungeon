@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"github.com/gorilla/websocket"
 	"github.com/kjintroverted/dungeon/models"
 	"google.golang.org/api/iterator"
 )
@@ -46,7 +49,7 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
+func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
 		fmt.Println("APP ERROR:", err.Error())
@@ -56,13 +59,60 @@ func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
-	doc, _ := client.Collection("characters").Doc(id).Get(ctx)
+	docRef := client.Collection("characters").Doc(id)
 
-	var character models.Character
-	doc.DataTo(&character)
-	character.ID = doc.Ref.ID
-	bytes, _ := json.Marshal(character)
-	w.Write(bytes)
+	if !watch { // GET CURRENT CHARACTER STATS
+		doc, _ := docRef.Get(ctx)
+		var character models.Character
+		doc.DataTo(&character)
+		character.ID = doc.Ref.ID
+		bytes, _ := json.Marshal(character)
+		w.Write(bytes)
+	} else { // SUBSCRIBE TO CHARACTER CHANGES
+		fmt.Println("Opening socket")
+		fmt.Println("Watching", id)
+
+		// CHANGE ITERATOR
+		iter := docRef.Snapshots(ctx)
+		var upgrader = websocket.Upgrader{}
+		// ALLOW ALL ORIGINS
+		upgrader.CheckOrigin = func(*http.Request) bool { return true }
+		c, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Print("upgrade:", err)
+			return
+		}
+		defer c.Close()
+
+		// CONCURRENT LOOP TO CHECK IF CONNECTION IS LIVE
+		go readLoop(c)
+		// LOOP TO RECEIVE SNAPSHOT AND SEND TO CLIENT
+		for {
+			docsnap, _ := iter.Next()
+			doc, _ := docsnap.Ref.Get(ctx)
+			var character models.Character
+			doc.DataTo(&character)
+			character.ID = doc.Ref.ID
+			bytes, _ := json.Marshal(character)
+			c.SetWriteDeadline(time.Now().Add(time.Second * 10))
+			err := c.WriteMessage(websocket.TextMessage, bytes)
+			if err != nil {
+				log.Println("Writing unavailable. Leaving Listener.")
+				c.Close()
+				break
+			}
+		}
+	}
+}
+
+func readLoop(c *websocket.Conn) {
+	for {
+		if _, _, err := c.NextReader(); err != nil {
+			log.Println("Closing socket")
+			c.Close()
+			break
+		}
+	}
 }
 
 func updateCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {
