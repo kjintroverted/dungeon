@@ -46,6 +46,7 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 		var character models.Character
 		doc.DataTo(&character)
 		character.ID = doc.Ref.ID
+		character.PopulateLevelInfo()
 		characters = append(characters, character)
 	}
 
@@ -107,6 +108,7 @@ func watchCharacters(w http.ResponseWriter, r *http.Request) {
 		var character models.Character
 		doc.DataTo(&character)
 		character.ID = doc.Ref.ID
+		character.PopulateLevelInfo()
 		characterSet = addToCharacterSet(characterSet, character)
 
 		bytes, _ := json.Marshal(characterSet)
@@ -164,6 +166,7 @@ func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	var character models.Character
 	doc.DataTo(&character)
 	character.ID = doc.Ref.ID
+	character.PopulateLevelInfo()
 	bytes, _ := json.Marshal(character)
 	w.Write(bytes)
 }
