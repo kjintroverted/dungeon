@@ -125,7 +125,9 @@ func watchCharacters(w http.ResponseWriter, r *http.Request) {
 func addToCharacterSet(characterSet []models.Character, character models.Character) []models.Character {
 	for i, c := range characterSet {
 		if c.ID == character.ID {
-			return append(characterSet[0:i], character, characterSet[i+1])
+			result := append(characterSet[0:i], character)
+			result = append(result, characterSet[i+1:]...)
+			return result
 		}
 	}
 	return append(characterSet, character)
