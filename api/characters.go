@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -27,10 +28,13 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 
 	var characters []models.Character
 	var iter *firestore.DocumentIterator
-	if owner := r.URL.Query().Get("owner"); owner == "" {
-		iter = client.Collection("characters").Documents(ctx)
-	} else {
+
+	owner := r.URL.Query().Get("owner")
+
+	if owner != "" {
 		iter = client.Collection("characters").Where("Owner", "==", owner).Documents(ctx)
+	} else {
+		iter = client.Collection("characters").Documents(ctx)
 	}
 
 	for {
@@ -49,7 +53,101 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request) {
+func watchCharacters(w http.ResponseWriter, r *http.Request) {
+	// DB CONNECTION
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+	defer client.Close()
+
+	// IDS TO WATCH
+	idList := strings.Split(r.URL.Query().Get("id"), ",")
+
+	// GET REF FOR EACH ENTITY FROM DB
+	var docList []*firestore.DocumentRef
+	for _, id := range idList {
+		docList = append(docList, client.Collection("characters").Doc(id))
+	}
+
+	// SET UP WEBSOCKET
+	var upgrader = websocket.Upgrader{}
+	// ALLOW ALL ORIGINS
+	upgrader.CheckOrigin = func(*http.Request) bool { return true }
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+
+	// START A LOOP TO WAIT FOR A CLOSE MESSAGE FROM CLIENT
+	go readLoop(c)
+
+	// CREATE A CHANNEL FOR INCOMING DATA FROM DB
+	snapChannel := make(chan *firestore.DocumentSnapshot)
+
+	// GIVE EACH DOC A LOOP TO WAIT FOR DATA
+	docs, _ := client.GetAll(ctx, docList)
+	for _, doc := range docs {
+		iter := doc.Ref.Snapshots(ctx)
+		go dataLoop(iter, snapChannel)
+	}
+
+	// SEND DATA WHEN UPDATES COME THRU CHANNEL
+	var characterSet []models.Character
+	for {
+		fmt.Println("Waiting for data")
+		docSnap := <-snapChannel
+		doc, _ := docSnap.Ref.Get(ctx)
+		fmt.Println("Received data for", doc.Ref.ID)
+		var character models.Character
+		doc.DataTo(&character)
+		character.ID = doc.Ref.ID
+		characterSet = addToCharacterSet(characterSet, character)
+
+		bytes, _ := json.Marshal(characterSet)
+		c.SetWriteDeadline(time.Now().Add(time.Second * 10))
+		err := c.WriteMessage(websocket.TextMessage, bytes)
+		if err != nil {
+			log.Println("Writing unavailable. Leaving Listener.")
+			c.Close()
+			break
+		}
+	}
+}
+
+func addToCharacterSet(characterSet []models.Character, character models.Character) []models.Character {
+	for i, c := range characterSet {
+		if c.ID == character.ID {
+			return append(characterSet[0:i], character, characterSet[i+1])
+		}
+	}
+	return append(characterSet, character)
+}
+
+func readLoop(c *websocket.Conn) {
+	for {
+		if _, _, err := c.NextReader(); err != nil {
+			log.Println("Closing socket")
+			c.Close()
+			break
+		}
+	}
+}
+
+func dataLoop(iter *firestore.DocumentSnapshotIterator, c chan *firestore.DocumentSnapshot) {
+	for {
+		docsnap, _ := iter.Next()
+		fmt.Println("Got data")
+		c <- docsnap
+	}
+}
+
+func getCharacter(id string, w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
 		fmt.Println("APP ERROR:", err.Error())
@@ -61,58 +159,13 @@ func getCharacter(id string, watch bool, w http.ResponseWriter, r *http.Request)
 
 	docRef := client.Collection("characters").Doc(id)
 
-	if !watch { // GET CURRENT CHARACTER STATS
-		doc, _ := docRef.Get(ctx)
-		var character models.Character
-		doc.DataTo(&character)
-		character.ID = doc.Ref.ID
-		bytes, _ := json.Marshal(character)
-		w.Write(bytes)
-	} else { // SUBSCRIBE TO CHARACTER CHANGES
-		fmt.Println("Opening socket")
-		fmt.Println("Watching", id)
-
-		// CHANGE ITERATOR
-		iter := docRef.Snapshots(ctx)
-		var upgrader = websocket.Upgrader{}
-		// ALLOW ALL ORIGINS
-		upgrader.CheckOrigin = func(*http.Request) bool { return true }
-		c, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Print("upgrade:", err)
-			return
-		}
-		defer c.Close()
-
-		// CONCURRENT LOOP TO CHECK IF CONNECTION IS LIVE
-		go readLoop(c)
-		// LOOP TO RECEIVE SNAPSHOT AND SEND TO CLIENT
-		for {
-			docsnap, _ := iter.Next()
-			doc, _ := docsnap.Ref.Get(ctx)
-			var character models.Character
-			doc.DataTo(&character)
-			character.ID = doc.Ref.ID
-			bytes, _ := json.Marshal(character)
-			c.SetWriteDeadline(time.Now().Add(time.Second * 10))
-			err := c.WriteMessage(websocket.TextMessage, bytes)
-			if err != nil {
-				log.Println("Writing unavailable. Leaving Listener.")
-				c.Close()
-				break
-			}
-		}
-	}
-}
-
-func readLoop(c *websocket.Conn) {
-	for {
-		if _, _, err := c.NextReader(); err != nil {
-			log.Println("Closing socket")
-			c.Close()
-			break
-		}
-	}
+	// GET CURRENT CHARACTER STATS
+	doc, _ := docRef.Get(ctx)
+	var character models.Character
+	doc.DataTo(&character)
+	character.ID = doc.Ref.ID
+	bytes, _ := json.Marshal(character)
+	w.Write(bytes)
 }
 
 func updateCharacter(c models.Character, w http.ResponseWriter, r *http.Request) {

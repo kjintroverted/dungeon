@@ -26,10 +26,13 @@ func Characters(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if id := mux.Vars(r)["id"]; len(id) > 0 {
-			getCharacter(id, r.URL.Query().Get("watch") == "true", w, r)
+			getCharacter(id, w, r)
+		} else if r.URL.Query().Get("watch") == "true" {
+			watchCharacters(w, r)
 		} else {
 			getAllCharacters(w, r)
 		}
+
 		break
 	case "POST":
 		// READ BODY BYTES
