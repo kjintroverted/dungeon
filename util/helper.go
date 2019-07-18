@@ -38,6 +38,24 @@ func Get(url string) ([]byte, error) {
 	return bytes, nil
 }
 
+func GetLevelInfo(xp int) (levelInfo Level) {
+	for i, level := range Advancement {
+
+		if i >= len(Advancement)-1 {
+			levelInfo = level
+			break
+		}
+
+		nextLevel := Advancement[i+1]
+		if nextLevel.MinXP > xp {
+			levelInfo = level
+			levelInfo.NextXP = nextLevel.MinXP
+			break
+		}
+	}
+	return
+}
+
 type Level struct {
 	MinXP  int `json:"-"`
 	Level  int `json:"level"`

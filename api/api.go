@@ -87,25 +87,6 @@ func AuthUsers(w http.ResponseWriter, r *http.Request) {
 
 func LevelInfo(w http.ResponseWriter, r *http.Request) {
 	xp, _ := strconv.Atoi(r.URL.Query().Get("xp"))
-
-	var levelInfo util.Level
-	for i, level := range util.Advancement {
-
-		defer func() {
-			if message := recover(); message != nil {
-				bytes, _ := json.Marshal(level)
-				w.Write(bytes)
-			}
-		}()
-
-		nextLevel := util.Advancement[i+1]
-		if nextLevel.MinXP > xp {
-			levelInfo = level
-			levelInfo.NextXP = nextLevel.MinXP
-			break
-		}
-	}
-
-	bytes, _ := json.Marshal(levelInfo)
+	bytes, _ := json.Marshal(util.GetLevelInfo(xp))
 	w.Write(bytes)
 }
