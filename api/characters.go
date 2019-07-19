@@ -219,8 +219,31 @@ func getAuthUsers(id string, w http.ResponseWriter, r *http.Request) {
 	var character models.Character
 	doc.DataTo(&character)
 
-	bytes, _ := json.Marshal(character.AuthorizedUsers)
+	user := r.URL.Query().Get("user")
 
+	var bytes []byte
+	if len(user) > 0 {
+		fmt.Println("checking:", user)
+		type simpleResponse struct {
+			Authorized bool `json:"authorized"`
+		}
+		result := user == character.Owner
+		if result {
+			bytes, _ = json.Marshal(simpleResponse{result})
+			goto Send
+		}
+		for _, authUser := range character.AuthorizedUsers {
+			if authUser == user {
+				result = true
+				break
+			}
+		}
+		bytes, _ = json.Marshal(simpleResponse{result})
+	} else {
+		fmt.Println("getting all users")
+		bytes, _ = json.Marshal(character.AuthorizedUsers)
+	}
+Send:
 	w.Write(bytes)
 }
 
