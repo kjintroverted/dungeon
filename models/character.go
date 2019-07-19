@@ -22,6 +22,7 @@ type Character struct {
 	Intel           int      `json:"intel"`
 	Wis             int      `json:"wis"`
 	Cha             int      `json:"cha"`
+	Initiative      int      `json:"initiative,omitempty"`
 }
 
 func (c *Character) PopulateLevelInfo() {

@@ -42,15 +42,6 @@ Content-Type: application/json
     "xp": 300
 }
 
-### GET AUTH USERS
-GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users
-
-### ADD AUTH USER
-POST http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users?user=captaincmy@gmail.com
-
-### REMOVING AUTH USER
-DELETE http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users?user=captaincmy@gmail.com
-
 ### NEW CHARACTER
 POST http://localhost:4000/api/characters 
 Content-Type: application/json
@@ -62,6 +53,15 @@ Content-Type: application/json
     "xp": 300,
     "owner": "clayton.yarborough@gmail.com"
 }
+
+### GET AUTH USERS
+GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users
+
+### ADD AUTH USER
+POST http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users?user=captaincmy@gmail.com
+
+### REMOVING AUTH USER
+DELETE http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq/auth-users?user=captaincmy@gmail.com
 
 ### DELETE CHARACTER
 DELETE http://localhost:4000/api/characters/6oHp62hgG0zeFPjwa8RB
