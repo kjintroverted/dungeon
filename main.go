@@ -44,10 +44,20 @@ func createMux() *mux.Router {
 	r.HandleFunc("/api/characters/{id}/auth-users", api.AuthUsers)
 	r.HandleFunc("/api/level", api.LevelInfo)
 
+	r.Use(enableCORS)
+
 	return r
 }
 
 // ROOT GETTER
 func root(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the Dungeon")
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
 }
