@@ -2,17 +2,32 @@ package srd
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/kjintroverted/dungeon/models"
 	"github.com/kjintroverted/dungeon/util"
 )
 
 func GetSpells(w http.ResponseWriter, r *http.Request) {
+	var spells []models.Spell
 
 	level := r.URL.Query().Get("level")
+	if level != "" {
+		spells, _ = getSpellsForLevel(level)
+	}
+
+	slugs := r.URL.Query().Get("name")
+	if slugs != "" {
+		spells, _ = getSpellsBySlug(strings.Split(slugs, ","))
+	}
+
+	// WRITE JSON
+	b, _ := json.Marshal(spells)
+	w.Write(b)
+}
+
+func getSpellsForLevel(level string) ([]models.Spell, error) {
 	var suffix string
 
 	switch level {
@@ -32,9 +47,7 @@ func GetSpells(w http.ResponseWriter, r *http.Request) {
 	// REQUEST
 	raw, err := util.Get(openURL + "/spells?level=" + level + suffix + "-level")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
+		return nil, err
 	}
 
 	// PULL RESULTS OFF RESPONSE
@@ -49,37 +62,25 @@ func GetSpells(w http.ResponseWriter, r *http.Request) {
 		spell.ConvertFields()
 		spells[i] = spell
 	}
-
-	// WRITE JSON
-	b, _ := json.Marshal(spells)
-	if err != nil {
-		fmt.Println("ERROR:", err.Error())
-	}
-	w.Write(b)
+	return spells, nil
 }
 
-func GetSpell(w http.ResponseWriter, r *http.Request) {
-	// REQUEST
-	raw, err := util.Get(openURL + "/spells/" + mux.Vars(r)["name"])
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err.Error())
-		return
-	}
+func getSpellsBySlug(slugs []string) ([]models.Spell, error) {
+	var spells []models.Spell
+	for _, slug := range slugs {
+		raw, err := util.Get(openURL + "/spells/" + slug)
+		if err != nil {
+			return spells, err
+		}
 
-	// PULL RESULTS OFF RESPONSE
-	var response interface{}
-	json.Unmarshal(raw, &response)
-	spellInterface := response.(interface{})
-	// MAP RESULTS TO STRUCT
-	var spell models.Spell
-	util.MapDecoder(&spell).Decode(spellInterface)
-	spell.ConvertFields()
-
-	// WRITE JSON
-	b, _ := json.Marshal(spell)
-	if err != nil {
-		fmt.Println("ERROR:", err.Error())
+		// PULL RESULTS OFF RESPONSE
+		var response interface{}
+		json.Unmarshal(raw, &response)
+		// MAP RESULTS TO STRUCT
+		var spell models.Spell
+		util.MapDecoder(&spell).Decode(response.(interface{}))
+		spell.ConvertFields()
+		spells = append(spells, spell)
 	}
-	w.Write(b)
+	return spells, nil
 }
