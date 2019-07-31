@@ -13,12 +13,6 @@ GET http://localhost:4000/api/spells?level=1
 ### SRD GET SPELL
 GET http://localhost:4000/api/spells/burning-hands
 
-### SRD GET ITEMS
-GET http://localhost:4000/api/items
-
-### SRD GET ITEM
-GET http://localhost:4000/api/items/5
-
 ### LEVEL INFO
 GET http://localhost:4000/api/level?xp=35500
 
@@ -33,7 +27,6 @@ GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq
 
 ### WATCH SINGLE CHARACTER
 GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq?watch=true
-
 
 ### UPDATE CHARACTER
 POST http://localhost:4000/api/characters 
