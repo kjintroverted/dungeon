@@ -26,6 +26,7 @@ type Character struct {
 	Initiative      int      `json:"initiative,omitempty"`
 	Weapons         []Weapon `json:"weapons"`
 	Inventory       []Item   `json:"inventory"`
+	GP       	float64  `json:"gold"`
 	Spells          []string `json:"spells,omitempty"`
 }
 
