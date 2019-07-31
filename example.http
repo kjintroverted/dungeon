@@ -4,20 +4,20 @@ GET http://localhost:4000/api
 ### SRD ALL CLASSES
 GET http://localhost:4000/api/classes
 
+### SRD GET CLASS
+GET http://localhost:4000/api/classes?name=Barbarian
+
 ### SRD ALL RACES
 GET http://localhost:4000/api/races
+
+### SRD ALL WEAPONS
+GET http://localhost:4000/api/weapons
 
 ### SRD ALL SPELLS FOR LEVEL
 GET http://localhost:4000/api/spells?level=1
 
 ### SRD GET SPELL
-GET http://localhost:4000/api/spells/burning-hands
-
-### SRD GET ITEMS
-GET http://localhost:4000/api/items
-
-### SRD GET ITEM
-GET http://localhost:4000/api/items/5
+GET http://localhost:4000/api/spells?name=burning-hands,alarm
 
 ### LEVEL INFO
 GET http://localhost:4000/api/level?xp=35500
@@ -34,7 +34,6 @@ GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq
 ### WATCH SINGLE CHARACTER
 GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq?watch=true
 
-
 ### UPDATE CHARACTER
 POST http://localhost:4000/api/characters 
 Content-Type: application/json
@@ -45,7 +44,39 @@ Content-Type: application/json
     "name": "Ardair Storm Crow",
     "race": "Human",
     "class": "Wizard",
-    "xp": 300
+    "hit_dice": "",
+    "xp": 300,
+    "level": 2,
+    "proBonus": 2,
+    "next": 900,
+    "hp": 10,
+    "armor": 12,
+    "speed": 30,
+    "str": 9,
+    "dex": 15,
+    "con": 14,
+    "intel": 16,
+    "wis": 13,
+    "cha": 11,
+    "weapons": [
+    {
+        "name": "Quarterstaff",
+        "category": "Simple Melee Weapons",
+        "damage_dice": "1d6",
+        "damage_type": "bludgeoning",
+        "weight": "4 lb.",
+        "properties": [
+        "versatile (1d8)"
+        ]
+    }
+    ],
+    "inventory": [
+    {
+        "name": "Music Box",
+        "description": "A sweet little music box with a hidden compartment",
+        "goldCost": 5
+    }
+    ]
 }
 
 ### NEW CHARACTER
