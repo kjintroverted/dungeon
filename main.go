@@ -32,6 +32,7 @@ func createMux() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/api", root)
 
+	// EXTERNAL API ENDPOINTS
 	r.HandleFunc("/api/races", srd.GetRaces)
 	r.HandleFunc("/api/classes", srd.GetClasses)
 	r.HandleFunc("/api/spells", srd.GetSpells)
@@ -39,6 +40,7 @@ func createMux() *mux.Router {
 	r.HandleFunc("/api/items", srd.GetItems)
 	r.HandleFunc("/api/items/{index}", srd.GetItem)
 
+	// DATA ENDPOINTS
 	r.HandleFunc("/api/characters", api.Characters)
 	r.HandleFunc("/api/characters/{id}", api.Characters)
 	r.HandleFunc("/api/characters/{id}/auth-users", api.AuthUsers)

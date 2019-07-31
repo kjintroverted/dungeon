@@ -6,5 +6,6 @@ type Race struct {
 }
 
 type Class struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	HitString string `json:"hit_dice,"`
 }
