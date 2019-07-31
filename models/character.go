@@ -9,6 +9,7 @@ type Character struct {
 	Name            string   `json:"name"`
 	Race            string   `json:"race"`
 	Class           string   `json:"class"`
+	HitDice         Dice     `json:"hitDice"`
 	XP              int      `json:"xp"`
 	Level           int      `json:"level" firestore:"-"`
 	ProBonus        int      `json:"proBonus" firestore:"-"`
@@ -23,6 +24,7 @@ type Character struct {
 	Wis             int      `json:"wis"`
 	Cha             int      `json:"cha"`
 	Initiative      int      `json:"initiative,omitempty"`
+	Spells          []string `json:"spells"`
 }
 
 func (c *Character) PopulateLevelInfo() {
