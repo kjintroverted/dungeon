@@ -4,6 +4,9 @@ GET http://localhost:4000/api
 ### SRD ALL CLASSES
 GET http://localhost:4000/api/classes
 
+### SRD GET CLASS
+GET http://localhost:4000/api/classes?name=Barbarian
+
 ### SRD ALL RACES
 GET http://localhost:4000/api/races
 
