@@ -9,7 +9,6 @@ type Character struct {
 	Name            string   `json:"name"`
 	Race            string   `json:"race"`
 	Class           string   `json:"class"`
-	HitDice         string   `json:"hit_dice"`
 	XP              int      `json:"xp"`
 	Level           int      `json:"level" firestore:"-"`
 	ProBonus        int      `json:"proBonus" firestore:"-"`
