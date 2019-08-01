@@ -21,20 +21,22 @@ func (c *Class) ParseTable() {
 	rows := strings.Split(c.Table, "\n")
 	var cols []string
 	infoMap := make(map[string][]string)
-	for rowNum, r := range rows {
+
+	for _, data := range strings.Split(rows[0], "|") {
+		value := strings.Trim(data, " -")
+		infoMap[value] = []string{}
+		cols = append(cols, value)
+	}
+
+	for _, r := range rows[2:] {
 		cells := strings.Split(r, "|")
-		colNum := -1
-		for _, data := range cells {
+		for colNum, data := range cells {
 			value := strings.Trim(data, " -")
-			if rowNum == 0 {
-				infoMap[value] = []string{}
-				cols = append(cols, value)
-			} else {
-				infoMap[cols[colNum]] = append(infoMap[cols[colNum]], value)
-			}
-			colNum++
+			infoMap[cols[colNum]] = append(infoMap[cols[colNum]], value)
 		}
 	}
+
+	delete(infoMap, "")
 	c.Table = ""
 	c.Information = infoMap
 }
