@@ -26,10 +26,6 @@ func (c *Class) ParseTable() {
 		colNum := -1
 		for _, data := range cells {
 			value := strings.Trim(data, " -")
-			if value == "" {
-				colNum++
-				continue
-			}
 			if rowNum == 0 {
 				infoMap[value] = []string{}
 				cols = append(cols, value)
