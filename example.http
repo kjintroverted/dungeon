@@ -14,7 +14,7 @@ GET http://localhost:4000/api/races
 GET http://localhost:4000/api/weapons
 
 ### SRD ALL SPELLS FOR LEVEL
-GET http://localhost:4000/api/spells?level=1
+GET http://localhost:4000/api/spells?level=Cantrip
 
 ### SRD GET SPELL
 GET http://localhost:4000/api/spells?name=burning-hands,alarm

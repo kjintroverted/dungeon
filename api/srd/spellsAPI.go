@@ -28,24 +28,12 @@ func GetSpells(w http.ResponseWriter, r *http.Request) {
 }
 
 func getSpellsForLevel(level string) ([]models.Spell, error) {
-	var suffix string
-
-	switch level {
-	case "1":
-		suffix = "st"
-		break
-	case "2":
-		suffix = "nd"
-		break
-	case "3":
-		suffix = "rd"
-		break
-	default:
-		suffix = "th"
+	if level != "Cantrip" {
+		level += "-level"
 	}
 
 	// REQUEST
-	raw, err := util.Get(openURL + "/spells?level=" + level + suffix + "-level")
+	raw, err := util.Get(openURL + "/spells?level=" + level)
 	if err != nil {
 		return nil, err
 	}
