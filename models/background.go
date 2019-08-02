@@ -13,6 +13,8 @@ type Class struct {
 	Name         string              `json:"name"`
 	HitString    string              `json:"hit_dice"`
 	SpellAbility string              `json:"spellcasting_ability,omitempty"`
+	ProSaves     string              `json:"prof_saving_throws"`
+	ProWeapons   string              `json:"prof_weapons"`
 	Information  map[string][]string `json:"info"`
 	Table        string              `json:"table,omitempty" firestore:"-"`
 }

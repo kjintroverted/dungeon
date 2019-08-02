@@ -14,6 +14,7 @@ type Character struct {
 	ProBonus        int      `json:"proBonus" firestore:"-"`
 	NextXP          int      `json:"next" firestore:"-"`
 	HP              int      `json:"hp"`
+	MaxHP           int      `json:"maxHP"`
 	Armor           int      `json:"armor"`
 	Speed           int      `json:"speed"`
 	Str             int      `json:"str"`
@@ -23,6 +24,7 @@ type Character struct {
 	Wis             int      `json:"wis"`
 	Cha             int      `json:"cha"`
 	Initiative      int      `json:"initiative,omitempty"`
+	ProSkills       []string `json:"proSkills"`
 	Weapons         []Weapon `json:"weapons"`
 	Inventory       []Item   `json:"inventory"`
 	GP              float64  `json:"gold"`
