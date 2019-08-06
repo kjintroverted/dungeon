@@ -1,0 +1,11 @@
+branches:
+    only:
+    - master
+language: go
+go:
+- 1.12.x
+deploy:
+  provider: heroku
+  api_key: $heroku_api_key
+  app:
+    master: green-screenings
