@@ -44,7 +44,8 @@ func createMux() *mux.Router {
 	r.HandleFunc("/api/characters/{id}/auth-users", api.AuthUsers)
 	r.HandleFunc("/api/level", api.LevelInfo)
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./app")))
+	spa := SpaHandler{staticPath: "app", indexPath: "index.html"}
+	r.PathPrefix("/").Handler(spa)
 
 	r.Use(enableCORS)
 
