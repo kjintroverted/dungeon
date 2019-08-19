@@ -20,7 +20,7 @@ type Character struct {
 	Str             int      `json:"str"`
 	Dex             int      `json:"dex"`
 	Con             int      `json:"con"`
-	Intel           int      `json:"intel"`
+	Intel           int      `json:"int"`
 	Wis             int      `json:"wis"`
 	Cha             int      `json:"cha"`
 	Initiative      int      `json:"initiative,omitempty"`
