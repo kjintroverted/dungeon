@@ -6,11 +6,10 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.12
 
     working_directory: ~/dungeon
     steps:
       - checkout
       # specify any bash command here prefixed with `run: `
       - run: go build .
-      
