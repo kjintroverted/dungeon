@@ -16,12 +16,9 @@ jobs:
       - run: mkdir ../build
       - run: go build .
       - run: mv dungeon ../build
-      - run: cd ../dragon-ui
-      - run: npm i
-      - run: npm run build:heroku
+      - run: cd ../dragon-ui && npm i
+      - run: cd ../dragon-ui && npm run build:heroku
       - run: rm -r ../build/app
-      - run: cp -r build ../build/app
-      - run: cd ../build
-      - run: git add -A
-      - run: git commit -m "new build $date"
-      - run: git push
+      - run: cp -r ../dragon-ui/build ../build/app
+      - run: cd ../build && ls -la
+      
