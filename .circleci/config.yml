@@ -23,5 +23,5 @@ jobs:
       - run: cp -r ../dragon-ui/build ../build/app
       - run: git config --global user.email "wkgreen13@gmail.com"
       - run: git config --global user.name "CircleCI"
-      - run: cd ../build && git add -A && git commit -m "CI build" && git push
+      - run: cd ../build && git status && git add -A && git commit -m "CI build" && git push
       
