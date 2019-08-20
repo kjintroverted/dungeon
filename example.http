@@ -22,11 +22,8 @@ GET http://localhost:4000/api/spells?name=burning-hands,alarm
 ### LEVEL INFO
 GET http://localhost:4000/api/level?xp=35500
 
-### ALL CHARACTERS
-GET http://localhost:4000/api/characters
-
 ### ALL CHARACTERS FOR OWNER
-GET http://localhost:4000/api/characters?owner=clayton.yarborough@gmail.com
+GET http://localhost:4000/api/characters?user=wkgreen13@gmail.com
 
 ### SINGLE CHARACTER
 GET http://localhost:4000/api/characters/Cx5B4G7COna1qvSFnoeq

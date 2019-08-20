@@ -6,6 +6,7 @@ type Character struct {
 	ID              string   `json:"id" firestore:"-"`
 	Owner           string   `json:"owner"`
 	AuthorizedUsers []string `json:"-"`
+	ReadUsers       []string `json:"visibleTo"`
 	Name            string   `json:"name"`
 	Race            string   `json:"race"`
 	Class           string   `json:"class"`
