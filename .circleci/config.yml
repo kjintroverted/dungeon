@@ -12,7 +12,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "e3:c2:9d:6c:a3:16:09:b9:5f:db:8d:7e:5a:dc:fc:7f"
+            - "b8:78:e9:fe:e2:dc:58:45:d2:36:b5:5e:a1:4a:be:c0"
       - run: cd .. && git clone git@github.com:kjintroverted/dragon-ui.git
       - run: cd .. && git clone git@github.com:kjintroverted/dnd-build.git build
       - run: cd .. && cp build/secret_firebase.json dragon-ui/src/secret_auth_config.json
