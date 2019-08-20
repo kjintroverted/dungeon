@@ -21,5 +21,7 @@ jobs:
       - run: cd ../dragon-ui && npm run build:heroku
       - run: rm -r ../build/app
       - run: cp -r ../dragon-ui/build ../build/app
-      - run: cd ../build && git add -A && git commit -m "CI build @ $date" && git push
+      - run: git config --global user.email "wkgreen13@gmail.com"
+      - run: git config --global user.name "CircleCI"
+      - run: cd ../build && git add -A && git commit -m "CI build" && git push
       
