@@ -5,7 +5,7 @@ import "github.com/kjintroverted/dungeon/util"
 type Character struct {
 	ID              string   `json:"id" firestore:"-"`
 	Owner           string   `json:"owner"`
-	AuthorizedUsers []string `json:"-"`
+	AuthorizedUsers []string `json:"authUsers"`
 	ReadUsers       []string `json:"visibleTo"`
 	Name            string   `json:"name"`
 	Race            string   `json:"race"`
