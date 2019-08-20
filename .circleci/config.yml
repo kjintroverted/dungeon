@@ -3,7 +3,16 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
+
   build:
+    docker:
+      - image: kjintroverted/go-node
+    working_directory: ~/dungeon
+    steps:
+      - checkout
+      - run: go build .
+
+  deploy:
     docker:
       - image: kjintroverted/go-node
     working_directory: ~/dungeon
@@ -25,3 +34,12 @@ jobs:
       - run: git config --global user.name "CircleCI"
       - run: cd ../build && git status && git add -A && git commit -m "CI build" && git push
       
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          filters:
+            branches:
+              only: master
