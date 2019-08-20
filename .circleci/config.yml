@@ -7,20 +7,20 @@ jobs:
     docker:
       - image: kjintroverted/go-node
 
-    working_directory: ~/dungeon
+    working_directory: ~
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
             - "b8:78:e9:fe:e2:dc:58:45:d2:36:b5:5e:a1:4a:be:c0"
-      - run: cd .. && git clone git@github.com:kjintroverted/dragon-ui.git
-      - run: cd .. && git clone git@github.com:kjintroverted/dnd-build.git build
-      - run: cd .. && cp build/secret_firebase.json dragon-ui/src/secret_auth_config.json
-      - run: go build .
-      - run: mv dungeon ../build
-      - run: cd ../dragon-ui && npm i
-      - run: cd ../dragon-ui && npm run build:heroku
-      - run: rm -r ../build/app
-      - run: cp -r ../dragon-ui/build ../build/app
-      - run: cd ../build && ls -la
+      - run: git clone git@github.com:kjintroverted/dragon-ui.git
+      - run: git clone git@github.com:kjintroverted/dnd-build.git build
+      - run: cp build/secret_firebase.json dragon-ui/src/secret_auth_config.json
+      - run: cd dungeon && go build .
+      - run: mv dungeon/dungeon build
+      - run: cd dragon-ui && npm i
+      - run: cd dragon-ui && npm run build:heroku
+      - run: rm -r build/app
+      - run: cp -r dragon-ui/build build/app
+      - run: cd build && git push
       
