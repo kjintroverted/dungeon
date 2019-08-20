@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run: go build .
 
-  build:
+  deploy:
     docker:
       - image: kjintroverted/go-node
     working_directory: ~/dungeon
