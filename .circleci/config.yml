@@ -5,15 +5,17 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version
       - image: kjintroverted/go-node
 
     working_directory: ~/dungeon
     steps:
       - checkout
-      # specify any bash command here prefixed with `run: `
-      - run: git clone git@github.com:kjintroverted/dragon-ui.git ../dragon-ui
-      - run: mkdir ../build
+      - add_ssh_keys:
+        fingerprints:
+          - "e3:c2:9d:6c:a3:16:09:b9:5f:db:8d:7e:5a:dc:fc:7f"
+      - run: cd .. && git clone git@github.com:kjintroverted/dragon-ui.git
+      - run: cd .. && git clone git@github.com:kjintroverted/dnd-build.git build
+      - run: cd .. && cp build/secret_firebase.json dragon-ui/src/secret_auth_config.json
       - run: go build .
       - run: mv dungeon ../build
       - run: cd ../dragon-ui && npm i
