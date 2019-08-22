@@ -16,6 +16,9 @@ GET http://localhost:4000/api/weapons
 ### SRD ALL FEATS
 GET http://localhost:4000/api/feats
 
+### SRD FEATS BY IDs
+GET http://localhost:4000/api/feats?id=1,2,3
+
 ### SRD ALL SPELLS FOR LEVEL
 GET http://localhost:4000/api/spells?level=Cantrip
 
