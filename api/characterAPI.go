@@ -29,14 +29,25 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	var characters []models.Character
 	var iter *firestore.DocumentIterator
 
-	owner := r.URL.Query().Get("owner")
+	user := r.URL.Query().Get("user")
 
-	if owner != "" {
-		iter = client.Collection("characters").Where("Owner", "==", owner).Documents(ctx)
-	} else {
-		iter = client.Collection("characters").Documents(ctx)
-	}
+	// CREATED BY USER
+	iter = client.Collection("characters").Where("Owner", "==", user).Documents(ctx)
+	characters = addResultsToArr(characters, iter)
 
+	// AUTHORIZED USER
+	iter = client.Collection("characters").Where("AuthorizedUsers", "array-contains", user).Documents(ctx)
+	characters = addResultsToArr(characters, iter)
+
+	// READ ONLY USER
+	iter = client.Collection("characters").Where("ReadUsers", "array-contains", user).Documents(ctx)
+	characters = addResultsToArr(characters, iter)
+
+	res, _ := json.Marshal(characters)
+	w.Write(res)
+}
+
+func addResultsToArr(arr []models.Character, iter *firestore.DocumentIterator) []models.Character {
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -47,11 +58,10 @@ func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 		doc.DataTo(&character)
 		character.ID = doc.Ref.ID
 		character.PopulateLevelInfo()
-		characters = append(characters, character)
+		arr = append(arr, character)
 	}
 
-	res, _ := json.Marshal(characters)
-	w.Write(res)
+	return arr
 }
 
 func watchCharacters(w http.ResponseWriter, r *http.Request) {
