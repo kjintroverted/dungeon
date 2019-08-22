@@ -37,6 +37,7 @@ func createMux() *mux.Router {
 	r.HandleFunc("/api/classes", srd.GetClasses)
 	r.HandleFunc("/api/spells", srd.GetSpells)
 	r.HandleFunc("/api/weapons", srd.GetWeapons)
+	r.HandleFunc("/api/feats", srd.AllFeats)
 
 	// DATA ENDPOINTS
 	r.HandleFunc("/api/characters", api.Characters)
