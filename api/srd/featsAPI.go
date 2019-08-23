@@ -2,7 +2,6 @@ package srd
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -100,7 +99,6 @@ func allFeats() []models.Feature {
 	// MAP RESULTS TO STRUCT
 	var feats []models.Feature
 	util.MapDecoder(&feats).Decode(featsInterface)
-	fmt.Println(feats)
 
 	return uniqueFeats(feats)
 }
