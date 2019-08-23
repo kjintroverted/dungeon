@@ -72,3 +72,58 @@ func getSpellsBySlug(slugs []string) ([]models.Spell, error) {
 	}
 	return spells, nil
 }
+
+func GetFeats(w http.ResponseWriter, r *http.Request) {
+	var feats []models.Feature
+
+	ids := r.URL.Query().Get("id")
+	if ids != "" {
+		feats = getFeatsByID(strings.Split(ids, ","))
+	} else {
+		feats = allFeats()
+	}
+
+	// WRITE JSON
+	b, _ := json.Marshal(feats)
+	w.Write(b)
+}
+
+func allFeats() []models.Feature {
+	raw, _ := util.Get(dndURL + "/features")
+
+	// PULL RESULTS OFF RESPONSE
+	var response interface{}
+	json.Unmarshal(raw, &response)
+
+	featsInterface := response.(map[string]interface{})["results"].([]interface{})
+	// MAP RESULTS TO STRUCT
+	var feats []models.Feature
+	util.MapDecoder(&feats).Decode(featsInterface)
+
+	return uniqueFeats(feats)
+}
+
+func uniqueFeats(arr []models.Feature) (result []models.Feature) {
+	for i, feat := range arr {
+		if i%3 == 0 {
+			result = append(result, feat)
+		}
+	}
+	return
+}
+
+func getFeatsByID(ids []string) []models.Feature {
+	var feats []models.Feature
+	for _, id := range ids {
+		raw, _ := util.Get(dndURL + "/features/" + id)
+
+		// PULL RESULTS OFF RESPONSE
+		var response interface{}
+		json.Unmarshal(raw, &response)
+		// MAP RESULTS TO STRUCT
+		var feature models.Feature
+		util.MapDecoder(&feature).Decode(response.(interface{}))
+		feats = append(feats, feature)
+	}
+	return feats
+}

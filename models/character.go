@@ -30,6 +30,7 @@ type Character struct {
 	Inventory       []Item   `json:"inventory"`
 	GP              float64  `json:"gold"`
 	Spells          []string `json:"spells,omitempty"`
+	Features        []int    `json:"feats,omitempty"`
 }
 
 func (c *Character) PopulateLevelInfo() {
