@@ -31,7 +31,7 @@ func GetRaces(w http.ResponseWriter, r *http.Request) {
 		raceMap := i.(map[string]interface{})
 		speed := raceMap["speed"].(map[string]interface{})
 		race := models.Race{Name: raceMap["name"].(string), Speed: int(speed["walk"].(float64))}
-		race.ParseTraits(raceMap["traits"].(string))
+		race.ParseTraits(raceMap["traits"].(string), raceMap["vision"].(string))
 		races = append(races, race)
 	}
 

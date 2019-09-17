@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 )
 
@@ -26,20 +26,29 @@ type Class struct {
 	Table        string              `json:"table,omitempty" firestore:"-"`
 }
 
-func (r *Race) ParseTraits(rawTraits string) {
-	fmt.Println(r.Name)
+func (r *Race) ParseTraits(rawTraits string, visionString string) {
+	// PARSE VISION STRINGS
+	if trait, err := parseTraitString(visionString); err == nil {
+		r.Traits = append(r.Traits, trait)
+	}
+	// PARSE TRAIT STRINGS
 	traitStrings := strings.Split(rawTraits, "**_")
 	for _, s := range traitStrings {
-		vals := strings.Split(s, "._**")
-		if len(vals) == 2 {
-			r.Traits = append(r.Traits, TraitValues{Name: vals[0], Desc: strings.Trim(vals[1], " *\n")})
-		} else if len(vals) == 1 {
-			vals := strings.Split(s, "** ")
-			if len(vals) == 2 {
-				r.Traits = append(r.Traits, TraitValues{Name: strings.Trim(vals[0], " *\n"), Desc: strings.Trim(vals[1], " *\n")})
-			}
+		if trait, err := parseTraitString(s); err == nil {
+			r.Traits = append(r.Traits, trait)
 		}
 	}
+}
+
+func parseTraitString(s string) (TraitValues, error) {
+	trimCharSet := " _*\n"
+	if vals := strings.Split(s, "._**"); len(vals) == 2 {
+		return TraitValues{Name: strings.Trim(vals[0], trimCharSet), Desc: strings.Trim(vals[1], trimCharSet)}, nil
+	}
+	if vals := strings.Split(s, "** "); len(vals) == 2 {
+		return TraitValues{Name: strings.Trim(vals[0], trimCharSet), Desc: strings.Trim(vals[1], trimCharSet)}, nil
+	}
+	return TraitValues{}, errors.New("could not parse string")
 }
 
 func (c *Class) ParseTable() {
