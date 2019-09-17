@@ -12,6 +12,11 @@ import (
 )
 
 func GetRaces(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Get("name") != "" { // RE-ROUTES TO SPECIFIC RACE
+		GetRace(w, r)
+		return
+	}
+
 	// REQUEST
 	raw, err := util.Get(openURL + "/races")
 	if err != nil {
@@ -36,6 +41,27 @@ func GetRaces(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bytes, _ := json.Marshal(races)
+	w.Write(bytes)
+}
+
+func GetRace(w http.ResponseWriter, r *http.Request) {
+	// REQUEST
+	raw, err := util.Get(openURL + "/races/" + strings.ToLower(r.URL.Query().Get("name")))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+		return
+	}
+
+	// PULL RESULTS OFF RESPONSE
+	var response interface{}
+	json.Unmarshal(raw, &response)
+	raceMap := response.(map[string]interface{})
+	speed := raceMap["speed"].(map[string]interface{})
+	race := models.Race{Name: raceMap["name"].(string), Speed: int(speed["walk"].(float64))}
+	race.ParseTraits(raceMap["traits"].(string), raceMap["vision"].(string))
+
+	bytes, _ := json.Marshal(race)
 	w.Write(bytes)
 }
 
