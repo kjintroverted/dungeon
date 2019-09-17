@@ -1,12 +1,19 @@
 package models
 
 import (
+	"fmt"
 	"strings"
 )
 
 type Race struct {
-	Name  string `json:"name"`
-	Speed int    `json:"speed"`
+	Name   string        `json:"name"`
+	Speed  int           `json:"speed"`
+	Traits []TraitValues `json:"traits"`
+}
+
+type TraitValues struct {
+	Name string `json:"name"`
+	Desc string `json:"desc"`
 }
 
 type Class struct {
@@ -17,6 +24,22 @@ type Class struct {
 	ProWeapons   string              `json:"prof_weapons"`
 	Information  map[string][]string `json:"info"`
 	Table        string              `json:"table,omitempty" firestore:"-"`
+}
+
+func (r *Race) ParseTraits(rawTraits string) {
+	fmt.Println(r.Name)
+	traitStrings := strings.Split(rawTraits, "**_")
+	for _, s := range traitStrings {
+		vals := strings.Split(s, "._**")
+		if len(vals) == 2 {
+			r.Traits = append(r.Traits, TraitValues{Name: vals[0], Desc: strings.Trim(vals[1], " *\n")})
+		} else if len(vals) == 1 {
+			vals := strings.Split(s, "** ")
+			if len(vals) == 2 {
+				r.Traits = append(r.Traits, TraitValues{Name: strings.Trim(vals[0], " *\n"), Desc: strings.Trim(vals[1], " *\n")})
+			}
+		}
+	}
 }
 
 func (c *Class) ParseTable() {
