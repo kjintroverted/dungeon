@@ -2,6 +2,7 @@ package models
 
 import "github.com/kjintroverted/dungeon/util"
 
+// Character models a playable character
 type Character struct {
 	ID              string    `json:"id" firestore:"-"`
 	Owner           string    `json:"owner"`
@@ -36,6 +37,8 @@ type Character struct {
 	Features        []Feature `json:"feats,omitempty"`
 }
 
+// PopulateLevelInfo will parse raw string data
+// from the 5e SRD to fill in the character
 func (c *Character) PopulateLevelInfo() {
 	levelInfo := util.GetLevelInfo(c.XP)
 	c.Level = levelInfo.Level
