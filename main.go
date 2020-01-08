@@ -40,6 +40,7 @@ func createMux() *mux.Router {
 	r.HandleFunc("/api/feats", srd.GetFeats)
 
 	// DATA ENDPOINTS
+	r.HandleFunc("/api/fix", api.Fix)
 	r.HandleFunc("/api/characters", api.Characters)
 	r.HandleFunc("/api/characters/{id}", api.Characters)
 	r.HandleFunc("/api/characters/{id}/auth-users", api.AuthUsers)
