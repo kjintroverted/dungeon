@@ -34,7 +34,8 @@ type Character struct {
 	Inventory       []Item    `json:"inventory"`
 	GP              float64   `json:"gold"`
 	Spells          []string  `json:"spells,omitempty"`
-	Features        []Feature `json:"feats,omitempty"`
+	Features        []string  `json:"feats,omitempty"`
+	FeaturesNew     []Feature `json:"featsNew,omitempty"`
 }
 
 // PopulateLevelInfo will parse raw string data

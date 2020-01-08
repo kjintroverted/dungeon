@@ -16,6 +16,33 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+func Fix(w http.ResponseWriter, r *http.Request) {
+	ctx = context.Background()
+	if app, err = firebase.NewApp(ctx, nil); err != nil {
+		fmt.Println("APP ERROR:", err.Error())
+	}
+	if client, err = app.Firestore(ctx); err != nil {
+		fmt.Println("DB ERROR:", err.Error())
+	}
+	defer client.Close()
+
+	var characters []models.Character
+	var iter *firestore.DocumentIterator
+
+	iter = client.Collection("characters").Documents(ctx)
+	characters = addResultsToArr(characters, iter)
+
+	for i, character := range characters {
+		for _, featIndex := range character.Features {
+			feat := models.Feature{Index: featIndex}
+			characters[i].FeaturesNew = append(characters[i].FeaturesNew, feat)
+		}
+	}
+
+	res, _ := json.Marshal(characters)
+	w.Write(res)
+}
+
 func getAllCharacters(w http.ResponseWriter, r *http.Request) {
 	ctx = context.Background()
 	if app, err = firebase.NewApp(ctx, nil); err != nil {
