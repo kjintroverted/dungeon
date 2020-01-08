@@ -34,7 +34,7 @@ type Character struct {
 	Inventory       []Item    `json:"inventory"`
 	GP              float64   `json:"gold"`
 	Spells          []string  `json:"spells,omitempty"`
-	Features        []string  `json:"feats,omitempty"`
+	Features        []int     `json:"feats,omitempty"`
 	FeaturesNew     []Feature `json:"featsNew,omitempty"`
 }
 
